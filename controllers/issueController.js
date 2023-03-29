@@ -115,6 +115,7 @@ const updateIssue = async (req, res) => {
         console.log("project from put route", project);
 
         const { _id, issue_title, issue_text, created_by, assigned_to, status_text, open } = req.body
+        console.log(_id, issue_title, issue_text, created_by, assigned_to, status_text, open, "_id, issue_title, issue_text, created_by, assigned_to, status_text, open");
         // if no id
         if (!_id) {
             res.json({ error: 'missing _id' })
@@ -165,7 +166,7 @@ const deleteIssue = async (req, res) => {
         const { _id } = req.body
 
         // if no _id
-        if (!_id) {
+        if (!_id || !_id.trim()) {
             res.json({ error: 'missing _id' })
         } else {
             // find issue from DB
