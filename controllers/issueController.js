@@ -9,7 +9,6 @@ const getAllIssues = async (req, res) => {
         let project = req.params.project;
         console.log("project from get route", project);
 
-        // get query parameters
         let {
             _id,
             issue_title,
@@ -21,7 +20,6 @@ const getAllIssues = async (req, res) => {
             updated_on,
             open
         } = req.query;
-        // console.log("_id", _id, "👍");
 
         // if query parameters are not empty, create a filter object
         let filter = {
@@ -37,13 +35,9 @@ const getAllIssues = async (req, res) => {
         if (updated_on) filter.updated_on = updated_on;
         if (open) filter.open = open;
 
-
-        
         // get all issues for a project
         const issues = await Issue.find(filter)
 
-
-        // console.log("issues", issues);
         res.json(issues.map((issue) => {
             return {
                 _id: issue._id,
@@ -75,13 +69,8 @@ const createIssue = async (req, res) => {
         console.log("project from post route", project);
 
         const { issue_title, issue_text, created_by, assigned_to, status_text } = req.body
-        // console.log("issue_title", issue_title, "👍");
-        // console.log("issue_text", issue_text, "👍");
-        // console.log("created_by", created_by, "👍");
-        // console.log("assigned_to", assigned_to, "👍");
-        // console.log("status_text", status_text, "👍");
         // save project to DB
-        if(!issue_title || !issue_text || !created_by){
+        if (!issue_title || !issue_text || !created_by) {
             res.json({ error: 'required field(s) missing' })
         } else {
             const newIssue = new Issue({
@@ -106,7 +95,6 @@ const createIssue = async (req, res) => {
                     updated_on: newIssue.updated_on,
                 }
             )
-
         }
     } catch (error) {
         res.json({
@@ -128,33 +116,32 @@ const updateIssue = async (req, res) => {
 
         const { _id, issue_title, issue_text, created_by, assigned_to, status_text, open } = req.body
         // if no id
-        if(!_id){
+        if (!_id) {
             res.json({ error: 'missing _id' })
-        } else {
-
-            // console.log("issue_title", issue_title, "👍");
-            // console.log("issue_text", issue_text, "👍");
-            // console.log("created_by", created_by, "👍");
-            // console.log("assigned_to", assigned_to, "👍");
-            // console.log("status_text", status_text, "👍");
-            // console.log("open", open, "👍");
+        }
+        // if no values
+        else if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
+            res.json({ error: 'no update field(s) sent', '_id': _id })
+        }
+        else {
             // find issue from DB
             const issue = await Issue.findOne({ project: project, _id: _id });
             console.log("issue", issue);
             // update issue
+
             // if values
-            if(issue_title) issue.issue_title = issue_title;
-            if(issue_text) issue.issue_text = issue_text;
-            if(created_by) issue.created_by = created_by;
-            if(assigned_to) issue.assigned_to = assigned_to;
-            if(status_text) issue.status_text = status_text;
-            if(open) issue.open = open;
+            if (issue_title) issue.issue_title = issue_title;
+            if (issue_text) issue.issue_text = issue_text;
+            if (created_by) issue.created_by = created_by;
+            if (assigned_to) issue.assigned_to = assigned_to;
+            if (status_text) issue.status_text = status_text;
+            if (open) issue.open = open;
             issue.updated_on = Date.now();
             // save issue to DB
             await issue.save();
             res.json(
                 {
-                    result:"successfully updated",
+                    result: "successfully updated",
                     _id: _id
                 }
             )
@@ -176,24 +163,25 @@ const deleteIssue = async (req, res) => {
         console.log("project from delete route", project);
 
         const { _id } = req.body
-        // console.log("_id", _id, "👍");
 
         // if no _id
-        if(!_id){
+        if (!_id) {
             res.json({ error: 'missing _id' })
-        }
-        // find issue from DB
-        const issue = await Issue.findOne({ project: project, _id: _id });
-        console.log("issue", issue);
+        } else {
+            // find issue from DB
+            const issue = await Issue.findOne({ project: project, _id: _id });
+            console.log("issue", issue);
+    
+            // delete issue from DB
+            await issue.remove();
+            res.json(
+                {
+                    result: "successfully deleted",
+                    _id: _id
+                }
+            )
 
-        // delete issue from DB
-        await issue.remove();
-        res.json(
-            {
-                result: "successfully deleted",
-                _id: _id
-            }
-        )
+        }
     } catch (error) {
         res.json({ error: 'could not delete', '_id': _id })
     }
