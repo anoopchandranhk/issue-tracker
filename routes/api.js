@@ -1,10 +1,10 @@
 'use strict';
-const {getAllIssues,  createIssue, updateIssue,  deleteIssue} = require("../controllers/issueController")
+const {getIssues,  createIssue, updateIssue,  deleteIssue} = require("../controllers/issueController")
 module.exports = function (app) {
 
   app.route('/api/issues/:project')
   
-    .get(getAllIssues)
+    .get(getIssues)
     
     .post(createIssue)
     
