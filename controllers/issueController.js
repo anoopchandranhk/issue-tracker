@@ -7,7 +7,6 @@ const Issue = require("../models/Issue");
 const getAllIssues = async (req, res) => {
     try {
         let project = req.params.project;
-        console.log("project from get route", project);
 
         let {
             _id,
@@ -66,7 +65,6 @@ const getAllIssues = async (req, res) => {
 const createIssue = async (req, res) => {
     try {
         let project = req.params.project;
-        console.log("project from post route", project);
 
         const { issue_title, issue_text, created_by, assigned_to, status_text } = req.body
         // save project to DB
@@ -110,13 +108,10 @@ const createIssue = async (req, res) => {
 // @access  Public
 
 const updateIssue = async (req, res) => {
+    const { _id, issue_title, issue_text, created_by, assigned_to, status_text, open } = req.body
     try {
         let project = req.params.project;
-        console.log("project from put route", project);
 
-        const { _id, issue_title, issue_text, created_by, assigned_to, status_text, open } = req.body
-        console.log(_id, issue_title, issue_text, created_by, assigned_to, status_text, open, "_id, issue_title, issue_text, created_by, assigned_to, status_text, open");
-        // if no id
         if (!_id) {
             res.json({ error: 'missing _id' })
         }
@@ -125,21 +120,23 @@ const updateIssue = async (req, res) => {
             res.json({ error: 'no update field(s) sent', '_id': _id })
         }
         else {
-            // find issue from DB
-            const issue = await Issue.findOne({ project: project, _id: _id });
-            console.log("issue", issue);
-            // update issue
 
             // if values
-            if (issue_title) issue.issue_title = issue_title;
-            if (issue_text) issue.issue_text = issue_text;
-            if (created_by) issue.created_by = created_by;
-            if (assigned_to) issue.assigned_to = assigned_to;
-            if (status_text) issue.status_text = status_text;
-            if (open) issue.open = open;
-            issue.updated_on = Date.now();
-            // save issue to DB
-            await issue.save();
+            let fields = {
+                // project: project
+            };
+            // if (_id) fields._id = _id;
+            if (issue_title) fields.issue_title = issue_title;
+            if (issue_text) fields.issue_text = issue_text;
+            if (created_by) fields.created_by = created_by;
+            if (assigned_to) fields.assigned_to = assigned_to;
+            if (status_text) fields.status_text = status_text;
+            if (open !== undefined) { 
+                fields.open = open; 
+            }
+            fields.updated_on = Date.now();
+            const issue = await Issue.findByIdAndUpdate(_id, fields, { new: true }).exec();
+            // update issue
             res.json(
                 {
                     result: "successfully updated",
@@ -161,7 +158,6 @@ const updateIssue = async (req, res) => {
 const deleteIssue = async (req, res) => {
     try {
         let project = req.params.project;
-        console.log("project from delete route", project);
 
         const { _id } = req.body
 
@@ -169,18 +165,18 @@ const deleteIssue = async (req, res) => {
         if (!_id || !_id.trim()) {
             res.json({ error: 'missing _id' })
         } else {
-            // find issue from DB
-            const issue = await Issue.findOne({ project: project, _id: _id });
-            console.log("issue", issue);
-    
-            // delete issue from DB
-            await issue.remove();
-            res.json(
-                {
-                    result: "successfully deleted",
-                    _id: _id
-                }
-            )
+            
+            // delete by id using mongoose
+            Issue.deleteOne({ _id: _id }).then(function(){
+                res.json(
+                    {
+                        result: "successfully deleted",
+                        _id: _id
+                    }
+                )
+            }).catch(function(error){
+                res.json({ error: 'could not delete', '_id': _id })
+            });
 
         }
     } catch (error) {

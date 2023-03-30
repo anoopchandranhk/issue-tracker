@@ -152,13 +152,13 @@ suite('Functional Tests', function () {
         chai.request(server)
             .put('/api/issues/apitest')
             .send({
-                _id: '5e8f9b0b4b9b8c0b8c8b8b8b',
+                _id: '6423b3b6c59f841fa7344a49',
                 issue_title: 'Updated Title'
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.result, 'successfully updated');
-                assert.equal(res.body._id, '5e8f9b0b4b9b8c0b8c8b8b8b');
+                assert.equal(res.body._id, '6423b3b6c59f841fa7344a49');
                 done();
             });
     });
@@ -169,14 +169,14 @@ suite('Functional Tests', function () {
         chai.request(server)
             .put('/api/issues/apitest')
             .send({
-                _id: '5e8f9b0b4b9b8c0b8c8b8b8b',
+                _id: '6423b3b6c59f841fa7344a49',
                 issue_title: 'Updated Title',
                 issue_text: 'Updated Text'
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.result, 'successfully updated');
-                assert.equal(res.body._id, '5e8f9b0b4b9b8c0b8c8b8b8b');
+                assert.equal(res.body._id, '6423b3b6c59f841fa7344a49');
                 done();
             });
     });
@@ -202,12 +202,12 @@ suite('Functional Tests', function () {
         chai.request(server)
             .put('/api/issues/apitest')
             .send({
-                _id: '5e8f9b0b4b9b8c0b8c8b8b8b'
+                _id: '6423b3b6c59f841fa7344a49'
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.error, 'no update field(s) sent');
-                assert.equal(res.body._id, '5e8f9b0b4b9b8c0b8c8b8b8b');
+                assert.equal(res.body._id, '6423b3b6c59f841fa7344a49');
                 done();
             });
     });
@@ -219,13 +219,13 @@ suite('Functional Tests', function () {
         chai.request(server)
             .put('/api/issues/apitest')
             .send({
-                _id: '5e8f9b0b4b9b8c0b8c8b8b8b',
+                _id: '423b3b6c59f841fa7344a4',
                 issue_title: 'Updated Title'
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.error, 'could not update');
-                assert.equal(res.body._id, '5e8f9b0b4b9b8c0b8c8b8b8b');
+                assert.equal(res.body._id, '423b3b6c59f841fa7344a4');
                 done();
             });
     });
@@ -237,12 +237,12 @@ suite('Functional Tests', function () {
         chai.request(server)
             .delete('/api/issues/apitest')
             .send({
-                _id: '5e8f9b0b4b9b8c0b8c8b8b8b'
+                _id: '6423b3b6c59f841fa7344a49'
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.result, 'successfully deleted');
-                assert.equal(res.body._id, '5e8f9b0b4b9b8c0b8c8b8b8b');
+                assert.equal(res.body._id, '6423b3b6c59f841fa7344a49');
                 done();
             });
     });
@@ -253,12 +253,12 @@ suite('Functional Tests', function () {
         chai.request(server)
             .delete('/api/issues/apitest')
             .send({
-                _id: '5e8f9b0b4b9b8c0b8c8b8b8b'
+                _id: '6423b3b6c59f841fa734'
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.error, 'could not delete');
-                assert.equal(res.body._id, '5e8f9b0b4b9b8c0b8c8b8b8b');
+                assert.equal(res.body._id, '6423b3b6c59f841fa734');
                 done();
             });
     });
