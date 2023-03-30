@@ -208,28 +208,27 @@ const deleteIssue = async (req, res) => {
     const { _id } = req.body
     try {
         let project = req.params.project;
-        console.log(project, "project from delete");
+        // console.log(project, "project from delete");
 
         const issueFound = await Issue.findById(_id)
 
         // if no _id
         if (!_id || !_id.trim()) {
-            console.log({ error: 'missing _id from delete' });
+            // console.log({ error: 'missing _id from delete' });
 
             res.json({ error: 'missing _id' })
         } 
         else if (!issueFound){
             // check if issue with _id exists in db
-            console.log(issueFound, "issueFound");
+            // console.log(issueFound, "issueFound");
             res.json({ error: 'could not delete', '_id': _id })
 
         }
         else {
-            // find by id and see if it exists else error it out
 
             // delete by id using mongoose
             Issue.deleteOne({ _id: _id }).then(function () {
-                console.log({ result: "successfully deleted", _id: _id });
+                // console.log({ result: "successfully deleted", _id: _id });
 
                 res.json(
                     {
@@ -238,13 +237,13 @@ const deleteIssue = async (req, res) => {
                     }
                 )
             }).catch(function (error) {
-                console.log({ error: 'could not delete', '_id': _id });
+                // console.log({ error: 'could not delete', '_id': _id });
                 res.json({ error: 'could not delete', '_id': _id })
             });
 
         }
     } catch (error) {
-        console.log({ error: 'could not delete from catch', '_id': _id });
+        // console.log({ error: 'could not delete from catch', '_id': _id });
         res.json({ error: 'could not delete', '_id': _id })
     }
 }

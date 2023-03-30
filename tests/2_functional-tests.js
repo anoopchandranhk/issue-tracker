@@ -2,11 +2,11 @@ const chaiHttp = require('chai-http');
 const chai = require('chai');
 const assert = chai.assert;
 const server = require('../server');
-// require dotenv config
 require('dotenv').config();
-let issueId = process.env.PLATFORM_ENV === "production" ? "6423bbec17bf687475a662dc" : "6423da0919fa4d6af808ee79"
-let deleteIssueId = process.env.PLATFORM_ENV === "production" ? "64244515e066a12afeb3153c" : "642446c5eb232edbd2f0f41f"
 chai.use(chaiHttp);
+
+let issueId;
+let deleteId;
 
 suite('Functional Tests', function () {
 
@@ -31,6 +31,7 @@ suite('Functional Tests', function () {
                 assert.equal(res.body.status_text, 'In QA');
                 assert.equal(res.body.open, true);
                 assert.property(res.body, '_id');
+                deleteId = res.body._id
                 assert.property(res.body, 'created_on');
                 assert.property(res.body, 'updated_on');
                 done();
@@ -56,6 +57,8 @@ suite('Functional Tests', function () {
                 assert.equal(res.body.status_text, '');
                 assert.equal(res.body.open, true);
                 assert.property(res.body, '_id');
+                issueId = res.body._id
+
                 assert.property(res.body, 'created_on');
                 assert.property(res.body, 'updated_on');
                 done();
@@ -237,15 +240,16 @@ suite('Functional Tests', function () {
 
     // Delete an issue: DELETE request to /api/issues/{project}
     test('Delete an issue: DELETE request to /api/issues/{project}', function (done) {
+        
         chai.request(server)
             .delete('/api/issues/apitest')
             .send({
-                _id: deleteIssueId
+                _id: deleteId
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.result, 'successfully deleted');
-                assert.equal(res.body._id, deleteIssueId);
+                assert.equal(res.body._id, deleteId);
                 done();
             });
     });
