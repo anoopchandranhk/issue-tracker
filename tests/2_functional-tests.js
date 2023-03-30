@@ -2,7 +2,10 @@ const chaiHttp = require('chai-http');
 const chai = require('chai');
 const assert = chai.assert;
 const server = require('../server');
-
+// require dotenv config
+require('dotenv').config();
+let issueId = process.env.PLATFORM_ENV === "production" ? "6423bbec17bf687475a662dc" : "6423da0919fa4d6af808ee79"
+let deleteIssueId = process.env.PLATFORM_ENV === "production" ? "64244515e066a12afeb3153c" : "64244514e066a12afeb3153a"
 chai.use(chaiHttp);
 
 suite('Functional Tests', function () {
@@ -152,13 +155,13 @@ suite('Functional Tests', function () {
         chai.request(server)
             .put('/api/issues/apitest')
             .send({
-                _id: '6423b3b6c59f841fa7344a49',
+                _id: issueId,
                 issue_title: 'Updated Title'
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.result, 'successfully updated');
-                assert.equal(res.body._id, '6423b3b6c59f841fa7344a49');
+                assert.equal(res.body._id, issueId);
                 done();
             });
     });
@@ -169,14 +172,14 @@ suite('Functional Tests', function () {
         chai.request(server)
             .put('/api/issues/apitest')
             .send({
-                _id: '6423b3b6c59f841fa7344a49',
+                _id: issueId,
                 issue_title: 'Updated Title',
                 issue_text: 'Updated Text'
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.result, 'successfully updated');
-                assert.equal(res.body._id, '6423b3b6c59f841fa7344a49');
+                assert.equal(res.body._id, issueId);
                 done();
             });
     });
@@ -202,12 +205,12 @@ suite('Functional Tests', function () {
         chai.request(server)
             .put('/api/issues/apitest')
             .send({
-                _id: '6423b3b6c59f841fa7344a49'
+                _id: issueId
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.error, 'no update field(s) sent');
-                assert.equal(res.body._id, '6423b3b6c59f841fa7344a49');
+                assert.equal(res.body._id, issueId);
                 done();
             });
     });
@@ -237,12 +240,12 @@ suite('Functional Tests', function () {
         chai.request(server)
             .delete('/api/issues/apitest')
             .send({
-                _id: '6423b3b6c59f841fa7344a49'
+                _id: deleteIssueId
             })
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.equal(res.body.result, 'successfully deleted');
-                assert.equal(res.body._id, '6423b3b6c59f841fa7344a49');
+                assert.equal(res.body._id, deleteIssueId);
                 done();
             });
     });

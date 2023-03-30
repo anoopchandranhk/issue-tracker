@@ -115,21 +115,27 @@ const updateIssue = async (req, res) => {
         console.log(project, "project from update");
 
         if (!_id) {
-            console.log({ error: 'missing _id  from update' });
+            console.log({ error: 'missing _id from update' });
             res.json({ error: 'missing _id' })
         }
+        // check if issue with _id exists in db
+        const issueFound = await Issue.findById(_id)
+        console.log(issueFound, "issueFound");
+        if (!issueFound){
+            res.json({ error: 'could not update', '_id': _id })
+        }
+
+
         // if no values
-        else if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
-            console.log({ error: 'no update field(s) sent  from update', '_id': _id });
+        if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
+            console.log({ error: 'no update field(s) sent from update', '_id': _id });
             res.json({ error: 'no update field(s) sent', '_id': _id })
         }
         else {
 
             // if values
             let fields = {
-                // project: project
             };
-            // if (_id) fields._id = _id;
             if (issue_title) fields.issue_title = issue_title;
             if (issue_text) fields.issue_text = issue_text;
             if (created_by) fields.created_by = created_by;
@@ -139,6 +145,7 @@ const updateIssue = async (req, res) => {
                 fields.open = open;
             }
             fields.updated_on = Date.now();
+            // find by id and see if its exists
             const issue = await Issue.findByIdAndUpdate(_id, fields, { new: true }).exec();
             // update issue
             console.log({ result: "successfully updated  from update", _id: _id });
@@ -148,12 +155,48 @@ const updateIssue = async (req, res) => {
                     _id: _id
                 }
             )
-        }
+
+
+
+
+
+        // Issue.findOne({ _id: _id }, (err, issue) => {
+        //     if (err || !issue) {
+        //         res.json({ error: "could not update", _id: _id });
+        //     } else {
+        //         if (issue_title) issue.issue_title = issue_title;
+        //         if (issue_text) issue.issue_text = issue_text;
+        //         if (created_by) issue.created_by = created_by;
+        //         if (assigned_to) issue.assigned_to = assigned_to;
+        //         if (status_text) issue.status_text = status_text;
+        //         if (open !== undefined) {
+        //             issue.open = open;
+        //         }
+        //         issue.updated_on = Date.now();
+        //         issue.save((err, data) => {
+        //             if (err || !data) {
+        //                 res.json({ error: "could not update", _id: _id });
+        //             } else {
+        //                 res.json({ result: "successfully updated", _id: _id });
+        //             }
+        //         });
+        //     }
+        // });
+
+
+
+
+
+
+
+
+
+    }
 
     } catch (error) {
-        console.log({ error: 'could not update  from catch', '_id': _id });
-        res.json({ error: 'could not update', '_id': _id })
-    }
+    console.log({ error: 'could not update  from catch', '_id': _id });
+    res.json({ error: 'could not update', '_id': _id })
+}
 }
 
 
@@ -175,6 +218,7 @@ const deleteIssue = async (req, res) => {
 
             res.json({ error: 'missing _id' })
         } else {
+            // find by id and see if it exists else error it out
 
             // delete by id using mongoose
             Issue.deleteOne({ _id: _id }).then(function () {
