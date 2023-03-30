@@ -193,7 +193,7 @@ const deleteIssue = async (req, res) => {
 
         }
     } catch (error) {
-        console.log({ error: 'could not delete from catch', '_id': _id );
+        console.log({ error: 'could not delete from catch', '_id': _id });
         res.json({ error: 'could not delete', '_id': _id })
     }
 }
