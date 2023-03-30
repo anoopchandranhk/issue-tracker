@@ -109,13 +109,17 @@ const updateIssue = async (req, res) => {
     const { _id, issue_title, issue_text, created_by, assigned_to, status_text, open } = req.body
     try {
         let project = req.params.project;
-
         if (!_id) {
             res.json({ error: 'missing _id' })
             return;
         }
+        let issueFound = await Issue.findById(_id)
 
         if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
+            if(!issueFound){
+                res.json({ error: 'could not update', '_id': _id })
+                return;
+            }
             res.json({ error: 'no update field(s) sent', '_id': _id })
             return;
         }
