@@ -109,14 +109,18 @@ const createIssue = async (req, res) => {
 
 const updateIssue = async (req, res) => {
     const { _id, issue_title, issue_text, created_by, assigned_to, status_text, open } = req.body
+    console.log(_id, issue_title, issue_text, created_by, assigned_to, status_text, open, "_id, issue_title, issue_text, created_by, assigned_to, status_text, open");
     try {
         let project = req.params.project;
+        console.log(project, "project from update");
 
         if (!_id) {
+            console.log({ error: 'missing _id  from update' });
             res.json({ error: 'missing _id' })
         }
         // if no values
         else if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
+            console.log({ error: 'no update field(s) sent  from update', '_id': _id });
             res.json({ error: 'no update field(s) sent', '_id': _id })
         }
         else {
@@ -131,12 +135,13 @@ const updateIssue = async (req, res) => {
             if (created_by) fields.created_by = created_by;
             if (assigned_to) fields.assigned_to = assigned_to;
             if (status_text) fields.status_text = status_text;
-            if (open !== undefined) { 
-                fields.open = open; 
+            if (open !== undefined) {
+                fields.open = open;
             }
             fields.updated_on = Date.now();
             const issue = await Issue.findByIdAndUpdate(_id, fields, { new: true }).exec();
             // update issue
+            console.log({ result: "successfully updated  from update", _id: _id });
             res.json(
                 {
                     result: "successfully updated",
@@ -146,6 +151,7 @@ const updateIssue = async (req, res) => {
         }
 
     } catch (error) {
+        console.log({ error: 'could not update  from catch', '_id': _id });
         res.json({ error: 'could not update', '_id': _id })
     }
 }
@@ -158,28 +164,36 @@ const updateIssue = async (req, res) => {
 const deleteIssue = async (req, res) => {
     try {
         let project = req.params.project;
+        console.log(project, "project from delete");
+
 
         const { _id } = req.body
 
         // if no _id
         if (!_id || !_id.trim()) {
+            console.log({ error: 'missing _id from delete' });
+
             res.json({ error: 'missing _id' })
         } else {
-            
+
             // delete by id using mongoose
-            Issue.deleteOne({ _id: _id }).then(function(){
+            Issue.deleteOne({ _id: _id }).then(function () {
+                console.log({ result: "successfully deleted", _id: _id });
+
                 res.json(
                     {
                         result: "successfully deleted",
                         _id: _id
                     }
                 )
-            }).catch(function(error){
+            }).catch(function (error) {
+                console.log({ error: 'could not delete', '_id': _id });
                 res.json({ error: 'could not delete', '_id': _id })
             });
 
         }
     } catch (error) {
+        console.log({ error: 'could not delete from catch', '_id': _id );
         res.json({ error: 'could not delete', '_id': _id })
     }
 }
