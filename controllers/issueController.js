@@ -119,7 +119,7 @@ const updateIssue = async (req, res) => {
             console.log({ error: 'missing _id from update' });
             res.json({ error: 'missing _id' })
         }
-        else if (!issueFound){
+        else if (!issueFound) {
             // check if issue with _id exists in db
             console.log(issueFound, "issueFound");
             res.json({ error: 'could not update', '_id': _id })
@@ -157,46 +157,12 @@ const updateIssue = async (req, res) => {
             )
 
 
-
-
-
-        // Issue.findOne({ _id: _id }, (err, issue) => {
-        //     if (err || !issue) {
-        //         res.json({ error: "could not update", _id: _id });
-        //     } else {
-        //         if (issue_title) issue.issue_title = issue_title;
-        //         if (issue_text) issue.issue_text = issue_text;
-        //         if (created_by) issue.created_by = created_by;
-        //         if (assigned_to) issue.assigned_to = assigned_to;
-        //         if (status_text) issue.status_text = status_text;
-        //         if (open !== undefined) {
-        //             issue.open = open;
-        //         }
-        //         issue.updated_on = Date.now();
-        //         issue.save((err, data) => {
-        //             if (err || !data) {
-        //                 res.json({ error: "could not update", _id: _id });
-        //             } else {
-        //                 res.json({ result: "successfully updated", _id: _id });
-        //             }
-        //         });
-        //     }
-        // });
-
-
-
-
-
-
-
-
-
-    }
+        }
 
     } catch (error) {
-    console.log({ error: 'could not update  from catch', '_id': _id });
-    res.json({ error: 'could not update', '_id': _id })
-}
+        console.log({ error: 'could not update  from catch', '_id': _id });
+        res.json({ error: 'could not update', '_id': _id })
+    }
 }
 
 
@@ -217,8 +183,8 @@ const deleteIssue = async (req, res) => {
             // console.log({ error: 'missing _id from delete' });
 
             res.json({ error: 'missing _id' })
-        } 
-        else if (!issueFound){
+        }
+        else if (!issueFound) {
             // check if issue with _id exists in db
             // console.log(issueFound, "issueFound");
             res.json({ error: 'could not delete', '_id': _id })
