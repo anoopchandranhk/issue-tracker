@@ -20,7 +20,6 @@ const getAllIssues = async (req, res) => {
             open
         } = req.query;
 
-        // if query parameters are not empty, create a filter object
         let filter = {
             project: project
         };
@@ -51,10 +50,7 @@ const getAllIssues = async (req, res) => {
             }
         }));
     } catch (error) {
-        res.json({
-            status: "error",
-            error: error.message
-        })
+        res.json({ status: "error", error: error.message })
     }
 }
 
@@ -67,33 +63,35 @@ const createIssue = async (req, res) => {
         let project = req.params.project;
 
         const { issue_title, issue_text, created_by, assigned_to, status_text } = req.body
-        // save project to DB
+
         if (!issue_title || !issue_text || !created_by) {
             res.json({ error: 'required field(s) missing' })
-        } else {
-            const newIssue = new Issue({
-                project: project,
-                issue_title: issue_title,
-                issue_text: issue_text,
-                created_by: created_by,
-                assigned_to: assigned_to,
-                status_text: status_text
-            });
-            await newIssue.save();
-            res.json(
-                {
-                    _id: newIssue._id,
-                    issue_title: newIssue.issue_title,
-                    issue_text: newIssue.issue_text,
-                    created_by: newIssue.created_by,
-                    assigned_to: newIssue.assigned_to,
-                    status_text: newIssue.status_text,
-                    open: newIssue.open,
-                    created_on: newIssue.created_on,
-                    updated_on: newIssue.updated_on,
-                }
-            )
+            return;
         }
+
+        const newIssue = new Issue({
+            project: project,
+            issue_title: issue_title,
+            issue_text: issue_text,
+            created_by: created_by,
+            assigned_to: assigned_to,
+            status_text: status_text
+        });
+        await newIssue.save();
+        res.json(
+            {
+                _id: newIssue._id,
+                issue_title: newIssue.issue_title,
+                issue_text: newIssue.issue_text,
+                created_by: newIssue.created_by,
+                assigned_to: newIssue.assigned_to,
+                status_text: newIssue.status_text,
+                open: newIssue.open,
+                created_on: newIssue.created_on,
+                updated_on: newIssue.updated_on,
+            }
+        )
+
     } catch (error) {
         res.json({
             status: "error",
@@ -109,58 +107,37 @@ const createIssue = async (req, res) => {
 
 const updateIssue = async (req, res) => {
     const { _id, issue_title, issue_text, created_by, assigned_to, status_text, open } = req.body
-    console.log(_id, issue_title, issue_text, created_by, assigned_to, status_text, open, "_id, issue_title, issue_text, created_by, assigned_to, status_text, open");
     try {
         let project = req.params.project;
-        console.log(project, "project from update");
-        const issueFound = await Issue.findById(_id)
 
         if (!_id) {
-            console.log({ error: 'missing _id from update' });
             res.json({ error: 'missing _id' })
-        }
-        else if (!issueFound) {
-            // check if issue with _id exists in db
-            console.log(issueFound, "issueFound");
-            res.json({ error: 'could not update', '_id': _id })
+            return;
         }
 
-
-        // if no values
-        else if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
-            console.log({ error: 'no update field(s) sent from update', '_id': _id });
+        if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
             res.json({ error: 'no update field(s) sent', '_id': _id })
+            return;
         }
-        else {
 
-            // if values
-            let fields = {
-            };
-            if (issue_title) fields.issue_title = issue_title;
-            if (issue_text) fields.issue_text = issue_text;
-            if (created_by) fields.created_by = created_by;
-            if (assigned_to) fields.assigned_to = assigned_to;
-            if (status_text) fields.status_text = status_text;
-            if (open !== undefined) {
-                fields.open = open;
-            }
-            fields.updated_on = Date.now();
-            // find by id and see if its exists
-            const issue = await Issue.findByIdAndUpdate(_id, fields, { new: true }).exec();
-            // update issue
-            console.log({ result: "successfully updated  from update", _id: _id });
-            res.json(
-                {
-                    result: "successfully updated",
-                    _id: _id
-                }
-            )
-
-
+        let fields = {};
+        if (issue_title) fields.issue_title = issue_title;
+        if (issue_text) fields.issue_text = issue_text;
+        if (created_by) fields.created_by = created_by;
+        if (assigned_to) fields.assigned_to = assigned_to;
+        if (status_text) fields.status_text = status_text;
+        if (open !== undefined) {
+            fields.open = open;
         }
+        fields.updated_on = Date.now();
+        const issue = await Issue.findByIdAndUpdate(_id, fields, { new: true }).exec();
+        if (!issue) {
+            res.json({ error: 'could not update', '_id': _id })
+            return;
+        }
+        res.json({ result: "successfully updated", _id: _id })
 
     } catch (error) {
-        console.log({ error: 'could not update  from catch', '_id': _id });
         res.json({ error: 'could not update', '_id': _id })
     }
 }
@@ -174,47 +151,26 @@ const deleteIssue = async (req, res) => {
     const { _id } = req.body
     try {
         let project = req.params.project;
-        // console.log(project, "project from delete");
-
-        const issueFound = await Issue.findById(_id)
 
         // if no _id
         if (!_id || !_id.trim()) {
-            // console.log({ error: 'missing _id from delete' });
-
             res.json({ error: 'missing _id' })
+            return;
         }
-        else if (!issueFound) {
-            // check if issue with _id exists in db
-            // console.log(issueFound, "issueFound");
+
+        const issue = await Issue.findOneAndDelete({ _id: _id })
+        if (!issue) {
             res.json({ error: 'could not delete', '_id': _id })
-
+            return;
         }
-        else {
 
-            // delete by id using mongoose
-            Issue.deleteOne({ _id: _id }).then(function () {
-                // console.log({ result: "successfully deleted", _id: _id });
+        res.json({ result: "successfully deleted", _id: _id })
 
-                res.json(
-                    {
-                        result: "successfully deleted",
-                        _id: _id
-                    }
-                )
-            }).catch(function (error) {
-                // console.log({ error: 'could not delete', '_id': _id });
-                res.json({ error: 'could not delete', '_id': _id })
-            });
 
-        }
     } catch (error) {
-        // console.log({ error: 'could not delete from catch', '_id': _id });
         res.json({ error: 'could not delete', '_id': _id })
     }
 }
-
-
 
 
 
