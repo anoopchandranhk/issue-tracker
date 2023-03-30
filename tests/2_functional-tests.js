@@ -5,7 +5,7 @@ const server = require('../server');
 // require dotenv config
 require('dotenv').config();
 let issueId = process.env.PLATFORM_ENV === "production" ? "6423bbec17bf687475a662dc" : "6423da0919fa4d6af808ee79"
-let deleteIssueId = process.env.PLATFORM_ENV === "production" ? "64244515e066a12afeb3153c" : "64244514e066a12afeb3153a"
+let deleteIssueId = process.env.PLATFORM_ENV === "production" ? "64244515e066a12afeb3153c" : "642446c5eb232edbd2f0f41f"
 chai.use(chaiHttp);
 
 suite('Functional Tests', function () {

@@ -113,21 +113,21 @@ const updateIssue = async (req, res) => {
     try {
         let project = req.params.project;
         console.log(project, "project from update");
+        const issueFound = await Issue.findById(_id)
 
         if (!_id) {
             console.log({ error: 'missing _id from update' });
             res.json({ error: 'missing _id' })
         }
-        // check if issue with _id exists in db
-        const issueFound = await Issue.findById(_id)
-        console.log(issueFound, "issueFound");
-        if (!issueFound){
+        else if (!issueFound){
+            // check if issue with _id exists in db
+            console.log(issueFound, "issueFound");
             res.json({ error: 'could not update', '_id': _id })
         }
 
 
         // if no values
-        if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
+        else if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
             console.log({ error: 'no update field(s) sent from update', '_id': _id });
             res.json({ error: 'no update field(s) sent', '_id': _id })
         }
@@ -205,19 +205,26 @@ const updateIssue = async (req, res) => {
 // @access  Public
 
 const deleteIssue = async (req, res) => {
+    const { _id } = req.body
     try {
         let project = req.params.project;
         console.log(project, "project from delete");
 
-
-        const { _id } = req.body
+        const issueFound = await Issue.findById(_id)
 
         // if no _id
         if (!_id || !_id.trim()) {
             console.log({ error: 'missing _id from delete' });
 
             res.json({ error: 'missing _id' })
-        } else {
+        } 
+        else if (!issueFound){
+            // check if issue with _id exists in db
+            console.log(issueFound, "issueFound");
+            res.json({ error: 'could not delete', '_id': _id })
+
+        }
+        else {
             // find by id and see if it exists else error it out
 
             // delete by id using mongoose
