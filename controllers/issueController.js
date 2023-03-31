@@ -107,20 +107,22 @@ const createIssue = async (req, res) => {
 
 const updateIssue = async (req, res) => {
     const { _id, issue_title, issue_text, created_by, assigned_to, status_text, open } = req.body
+    console.log(open, typeof open, "open, typeof open, ");
     // console.log(_id, issue_title, issue_text, created_by, assigned_to, status_text, open, "_id, issue_title, issue_text, created_by, assigned_to, status_text, open");
     try {
         let project = req.params.project;
         if (!_id) {
             return res.json({ error: 'missing _id' })
         }
+        if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
+            return res.json({ error: 'no update field(s) sent', '_id': _id })
+        }
         let issueFound = await Issue.findById(_id)
         if(!issueFound){
             return res.json({ error: 'could not update', '_id': _id })
         }
         
-        if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
-            return res.json({ error: 'no update field(s) sent', '_id': _id })
-        }
+        
         
 
         let fields = {};
