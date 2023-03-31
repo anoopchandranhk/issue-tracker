@@ -107,26 +107,21 @@ const createIssue = async (req, res) => {
 
 const updateIssue = async (req, res) => {
     const { _id, issue_title, issue_text, created_by, assigned_to, status_text, open } = req.body
-    console.log(_id, issue_title, issue_text, created_by, assigned_to, status_text, open, "_id, issue_title, issue_text, created_by, assigned_to, status_text, open");
+    // console.log(_id, issue_title, issue_text, created_by, assigned_to, status_text, open, "_id, issue_title, issue_text, created_by, assigned_to, status_text, open");
     try {
         let project = req.params.project;
         if (!_id) {
-            console.log({ error: 'missing _id' });
-            res.json({ error: 'missing _id' })
-            return;
+            return res.json({ error: 'missing _id' })
         }
         let issueFound = await Issue.findById(_id)
-
-        if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
-            if(!issueFound){
-                console.log({ error: 'could not update, invalid id', '_id': _id });
-                res.json({ error: 'could not update', '_id': _id })
-                return;
-            }
-            console.log({ error: 'no update field(s) sent', '_id': _id });
-            res.json({ error: 'no update field(s) sent', '_id': _id })
-            return;
+        if(!issueFound){
+            return res.json({ error: 'could not update', '_id': _id })
         }
+        
+        if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
+            return res.json({ error: 'no update field(s) sent', '_id': _id })
+        }
+        
 
         let fields = {};
         if (issue_title) fields.issue_title = issue_title;
@@ -140,15 +135,11 @@ const updateIssue = async (req, res) => {
         fields.updated_on = Date.now();
         const issue = await Issue.findByIdAndUpdate(_id, fields, { new: true }).exec();
         if (!issue) {
-            console.log({ error: 'could not update, no such issue', '_id': _id });
-            res.json({ error: 'could not update', '_id': _id })
-            return;
+            return res.json({ error: 'could not update', '_id': _id })
         }
-        console.log({ result: "successfully updated", _id: _id });
         res.json({ result: "successfully updated", _id: _id })
 
     } catch (error) {
-        console.log({ error: 'could not update from catch', '_id': _id });
         res.json({ error: 'could not update', '_id': _id })
     }
 }
